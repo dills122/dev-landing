@@ -57,7 +57,9 @@ jobs:
         run: npm ci
 
       - name: Install Chrome for audits
-        run: npx puppeteer browsers install chrome
+        run: |
+          rm -rf ~/.cache/puppeteer/chrome
+          npx puppeteer install chrome
 
       - name: Run Pa11y CI
         run: npm run audit:a11y
@@ -88,7 +90,9 @@ jobs:
         run: npm ci
 
       - name: Install Chrome for audits
-        run: npx puppeteer browsers install chrome
+        run: |
+          rm -rf ~/.cache/puppeteer/chrome
+          npx puppeteer install chrome
 
       - name: Run Lighthouse CI
         run: npm run audit:lighthouse
