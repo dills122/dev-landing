@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+---
+
+<BlogLayout
+  title="Blog - Dylan Steele"
+  description="Technical reviews, overviews, tutorials, notes, and ramblings from Dylan Steele."
+>
+  <section class="blog-index" aria-labelledby="blog-title">
+    <div class="blog-heading">
+      <p class="section-kicker">Writing</p>
+      <h1 id="blog-title">Technical notes and ramblings.</h1>
+      <p>
+        Markdown-based posts for technical reviews, overviews, tutorials, and
+        loose notes from work across frontend systems and financial products.
+      </p>
+    </div>
+
+    <div class="post-list">
+      {
+        posts.map((post) => (
+          <article class="post-card">
+            <div class="post-card-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate)}
+              </time>
+              <span>{post.data.type}</span>
+            </div>
+            <h2>
+              <a href={`${base}blog/${post.id}/`}>
+                {post.data.title}
+              </a>
+            </h2>
+            <p>{post.data.description}</p>
+            {post.data.tags.length > 0 && (
+              <ul class="tag-list" aria-label={`Tags for ${post.data.title}`}>
+                {post.data.tags.map((tag) => (
+                  <li>
+                    <a href={`${base}blog/tags/${tag}/`}>
+                      {tag}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BlogLayout>

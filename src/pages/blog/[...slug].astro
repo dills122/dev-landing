@@ -1,0 +1,131 @@
+---
+import { getCollection, render } from "astro:content";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+---
+
+<BlogLayout title={`${post.data.title} - Dylan Steele`} description={post.data.description}>
+  <article class="post-layout">
+    <header class="post-header">
+      <a class="back-link" href={`${base}blog/`}>All writing</a>
+      <div class="post-meta">
+        <time datetime={post.data.pubDate.toISOString()}>
+          {formatDate(post.data.pubDate)}
+        </time>
+        <span>{post.data.type}</span>
+      </div>
+      <h1>{post.data.title}</h1>
+      <p>{post.data.description}</p>
+      {post.data.tags.length > 0 && (
+        <ul class="tag-list" aria-label={`Tags for ${post.data.title}`}>
+          {post.data.tags.map((tag) => (
+            <li>
+              <a href={`${base}blog/tags/${tag}/`}>{tag}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </header>
+
+    {
+      tocHeadings.length > 0 && (
+        <details class="toc">
+          <summary>Contents</summary>
+          <ol>
+            {tocHeadings.map((heading) => (
+              <li class={`depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )
+    }
+
+    <div class="post-body">
+      <Content />
+    </div>
+  </article>
+
+  <script>
+    const copyLabel = "Copy";
+    const copiedLabel = "Copied";
+
+    document.querySelectorAll(".post-body pre").forEach((pre) => {
+      if (!(pre instanceof HTMLElement)) return;
+
+      const code = pre.querySelector("code");
+      if (!code) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "code-block";
+
+      const button = document.createElement("button");
+      button.className = "copy-code-button";
+      button.type = "button";
+      button.textContent = copyLabel;
+
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.append(button, pre);
+
+      button.addEventListener("click", async () => {
+        const text = code.textContent ?? "";
+
+        try {
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            throw new Error("Clipboard API unavailable");
+          }
+          button.textContent = copiedLabel;
+          window.setTimeout(() => {
+            button.textContent = copyLabel;
+          }, 1400);
+        } catch {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          textArea.setAttribute("readonly", "");
+          textArea.style.position = "fixed";
+          textArea.style.insetBlockStart = "-100vh";
+          document.body.append(textArea);
+          textArea.select();
+
+          const execCopy = (
+            document as Document & {
+              execCommand?: (commandId: string) => boolean;
+            }
+          ).execCommand;
+          const copied = execCopy ? execCopy.call(document, "copy") : false;
+          textArea.remove();
+          button.textContent = copied ? copiedLabel : "Failed";
+          window.setTimeout(() => {
+            button.textContent = copyLabel;
+          }, 1400);
+        }
+      });
+    });
+  </script>
+</BlogLayout>

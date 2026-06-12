@@ -1,0 +1,448 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const imageBase = `${base}archive/personal-website/`;
+const schedulerCode = `public static object CreateJob(string jobIdentity, string triggerIdentity, string url, string scheduledTime)
+{
+    IJobDetail job = JobBuilder.Create<Jobs>()
+        .WithIdentity(jobIdentity)
+        .UsingJobData("URL", url)
+        .Build();
+
+    ITrigger trigger = TriggerBuilder.Create()
+        .ForJob(job)
+        .WithIdentity(triggerIdentity)
+        .WithCronSchedule(scheduledTime)
+        .Build();
+
+    return new NewJob(job, trigger);
+}`;
+const hashingCode = `static string Hash(string input, string salt)
+{
+    byte[] convertedToBytes = Encoding.UTF8.GetBytes(input + salt);
+    HashAlgorithm hashType = new SHA512Managed();
+    byte[] hashBytes = hashType.ComputeHash(convertedToBytes);
+
+    return Convert.ToBase64String(hashBytes);
+}`;
+---
+
+<BaseLayout
+  title="Archived Personal Website - Dylan Steele"
+  description="A static recreation of an older ASP.NET personal website and portfolio."
+>
+  <main
+    id="content"
+    class="archive-site"
+    aria-labelledby="archive-title"
+    style={`--archive-texture: url("${imageBase}stardust.png")`}
+  >
+    <section class="legacy-title">
+      <nav class="legacy-social" aria-label="Archived social links">
+        <a href="https://github.com/dills122">GitHub</a>
+        <a href="https://www.linkedin.com/in/dssteele122/">LinkedIn</a>
+        <a href="https://stackoverflow.com/users/4962223/dylan-steele">Stack Overflow</a>
+      </nav>
+      <div class="legacy-title-card">
+        <p class="archive-kicker">Archived ASP.NET portfolio recreation</p>
+        <h1 id="archive-title">Dylan Steele</h1>
+        <p>Bachelor of Computer Science</p>
+        <p>Indiana University of PA</p>
+        <p>Pennsylvania State University</p>
+        <p>Junior Web Developer (Full Stack)</p>
+      </div>
+    </section>
+
+    <section class="legacy-about" aria-labelledby="about-title">
+      <div>
+        <h2 id="about-title">Languages</h2>
+        <p>
+          Proficient: C#, VB.NET, ASP.NET, HTML/CSS, SQL, Java, XML, JSON,
+          JavaScript, jQuery.
+        </p>
+        <p>
+          Familiar with: Vue.js, Sass, PHP, C, Python, C++, shell scripting,
+          Bootstrap, Ajax, CSS3 Flexbox.
+        </p>
+        <p>Currently learning: Go, CSS Grid, Firebase authentication and data.</p>
+      </div>
+      <div>
+        <h2>Experience</h2>
+        <p>
+          Community Action, Inc. - Junior Web Developer (Full Stack), June
+          2016 to August 2017.
+        </p>
+        <ul>
+          <li>Designed, maintained, developed, and documented COPOS web systems.</li>
+          <li>Created new internal features and systems as needed.</li>
+          <li>Designed, built, and tested the company's new website.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="webforms-shell" aria-labelledby="webforms-title">
+      <aside class="legacy-sidebar" aria-label="Archived WebForms navigation">
+        <h2>Dylan Steele Portfolio</h2>
+        <a href="#webforms-title">Home</a>
+        <a href="#about-title">About</a>
+        <span>Code Examples</span>
+        <a href="#aspnet">ASP.NET</a>
+        <a href="#hashing">C# Hashing</a>
+        <span>Misc</span>
+        <a href="#mortgage">Mortgage Amortization</a>
+        <a href="#calculator">Calculator</a>
+        <a href="#scheduler">Task Scheduler System</a>
+      </aside>
+
+      <div class="legacy-content">
+        <header class="legacy-jumbotron">
+          <h2 id="webforms-title">Dylan Steele Portfolio</h2>
+          <p>
+            Static reconstruction of the old WebForms shell. The database,
+            login, admin, and form actions are intentionally stubbed.
+          </p>
+        </header>
+
+        <article id="aspnet" class="legacy-panel">
+          <div>
+            <p class="archive-kicker">ASP.NET</p>
+            <h3>COPOS report tooling</h3>
+            <p>
+              The original project pages described generated report tables,
+              initiative management, report downloads, organization summaries,
+              and a rule creator used for graphics and reporting workflows.
+            </p>
+          </div>
+          <div class="legacy-image-grid">
+            <img
+              src={`${imageBase}manage-yty-graphic.png`}
+              alt="Archived year-to-year report graphic screenshot"
+              loading="lazy"
+            />
+            <img
+              src={`${imageBase}rule-creator.png`}
+              alt="Archived rule creator screenshot"
+              loading="lazy"
+            />
+          </div>
+        </article>
+
+        <article id="calculator" class="legacy-panel">
+          <div>
+            <p class="archive-kicker">Desktop project</p>
+            <h3>Calculator</h3>
+            <p>
+              A college calculator application using mXparser for arithmetic
+              expressions, scientific operations, and a pop-out history panel.
+            </p>
+          </div>
+          <img
+            src={`${imageBase}calculator.png`}
+            alt="Archived calculator screenshot"
+            loading="lazy"
+          />
+        </article>
+
+        <article id="mortgage" class="legacy-panel">
+          <p class="archive-kicker">Mortgage amortization</p>
+          <h3>Stubbed form recreation</h3>
+          <form class="mortgage-form" aria-label="Archived mortgage calculator form">
+            <label>
+              <span>Home Price</span>
+              <input type="text" placeholder="250000" />
+            </label>
+            <label>
+              <span>Down Payment</span>
+              <input type="text" placeholder="50000" />
+            </label>
+            <label>
+              <span>Mortgage Term</span>
+              <input type="text" placeholder="30" />
+            </label>
+            <label>
+              <span>Annual Interest Rate</span>
+              <input type="text" placeholder="6.75%" />
+            </label>
+            <button type="button">Submit</button>
+          </form>
+        </article>
+
+        <article id="scheduler" class="legacy-panel">
+          <p class="archive-kicker">Task Scheduler System</p>
+          <h3>Quartz.NET scheduling example</h3>
+          <p>
+            The old page described a WebForms replacement for Windows Task
+            Scheduler using Quartz.NET, persisted tasks, and URL-triggered jobs.
+          </p>
+          <pre><code>{schedulerCode}</code></pre>
+        </article>
+
+        <article id="hashing" class="legacy-panel">
+          <p class="archive-kicker">Hashing and salting</p>
+          <h3>Windows Forms password utility</h3>
+          <p>
+            The archived code example hashed a password plus random salt using
+            SHA-512, then checked a second input against the generated hash.
+          </p>
+          <pre><code>{hashingCode}</code></pre>
+        </article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .archive-site {
+    --legacy-cyan: #caebf2;
+    --legacy-gray: #a9a9a9;
+    --legacy-panel: #efefef;
+    --legacy-dark: #333333;
+
+    min-height: 100vh;
+    background:
+      linear-gradient(rgba(99, 98, 106, 0.82), rgba(99, 98, 106, 0.82)),
+      var(--archive-texture);
+    color: #111;
+  }
+
+  .legacy-title {
+    position: relative;
+    display: grid;
+    min-height: 92vh;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  .legacy-social {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .legacy-social a {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 4px;
+    color: var(--legacy-cyan);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.35rem 0.55rem;
+    text-decoration: none;
+  }
+
+  .legacy-title-card {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .archive-kicker {
+    color: var(--legacy-cyan);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+  }
+
+  .legacy-title-card h1,
+  .legacy-title-card p:not(.archive-kicker) {
+    max-width: none;
+    background: var(--legacy-cyan);
+    color: var(--legacy-gray);
+    font-family: var(--font-mono);
+    line-height: 1.1;
+    padding: 0.12rem 0.35rem;
+  }
+
+  .legacy-title-card h1 {
+    font-size: clamp(2.6rem, 12vw, 5.5rem);
+  }
+
+  .legacy-title-card p:not(.archive-kicker) {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .legacy-about {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 3rem 1rem;
+  }
+
+  .legacy-about > div,
+  .legacy-panel {
+    border-radius: 3px;
+    background: rgba(51, 51, 51, 0.42);
+    color: var(--legacy-cyan);
+    padding: 1rem;
+  }
+
+  .legacy-about h2 {
+    display: inline-block;
+    margin-block-end: 1rem;
+    background: var(--legacy-cyan);
+    color: var(--legacy-gray);
+    font-family: var(--font-mono);
+    padding: 0.15rem 0.65rem;
+  }
+
+  .legacy-about p,
+  .legacy-about li {
+    color: var(--legacy-cyan);
+    font-family: var(--font-mono);
+  }
+
+  .legacy-about ul {
+    display: grid;
+    gap: 0.45rem;
+    padding-inline-start: 1.2rem;
+  }
+
+  .webforms-shell {
+    display: grid;
+    grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
+    min-height: 100vh;
+    background: #f2f2f2;
+    color: #111;
+  }
+
+  .legacy-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: #f2f2f2;
+    border-inline-end: 1px solid #d8d8d8;
+    padding: 1rem;
+  }
+
+  .legacy-sidebar h2 {
+    margin-block: 0 1rem;
+    color: #333;
+    font-size: 1.1rem;
+  }
+
+  .legacy-sidebar span {
+    margin-block-start: 1rem;
+    color: #333;
+    font-weight: 700;
+  }
+
+  .legacy-sidebar a {
+    border-radius: 4px;
+    background: #337ab7;
+    color: #fff;
+    padding: 0.42rem 0.65rem;
+    text-decoration: none;
+  }
+
+  .legacy-content {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .legacy-jumbotron {
+    background: var(--legacy-dark);
+    color: #fff;
+    padding: 2rem;
+  }
+
+  .legacy-jumbotron h2,
+  .legacy-panel h3 {
+    margin: 0;
+  }
+
+  .legacy-jumbotron p {
+    max-width: 48rem;
+    color: #f2f2f2;
+  }
+
+  .legacy-panel {
+    display: grid;
+    gap: 1rem;
+    border: 1px solid #d8d8d8;
+    background: #fff;
+    color: #111;
+  }
+
+  .legacy-panel p:not(.archive-kicker),
+  .legacy-panel li {
+    color: #222;
+  }
+
+  .legacy-image-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .legacy-panel img {
+    border: 1px solid #d8d8d8;
+    border-radius: 3px;
+    background: #f2f2f2;
+  }
+
+  .mortgage-form {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 34rem;
+  }
+
+  .mortgage-form label {
+    display: grid;
+    gap: 0.25rem;
+    color: #222;
+    font-weight: 700;
+  }
+
+  .mortgage-form input {
+    border: 1px solid #bcbcbc;
+    border-radius: 4px;
+    color: #111;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .mortgage-form button {
+    border: 0;
+    border-radius: 4px;
+    background: #8c8c8c;
+    color: #fff;
+    cursor: not-allowed;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .legacy-panel pre {
+    overflow-x: auto;
+    border-radius: 4px;
+    background: #282c34;
+    color: #d8dee9;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  .legacy-panel code {
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 48rem) {
+    .legacy-about,
+    .webforms-shell,
+    .legacy-image-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .legacy-sidebar {
+      border-block-end: 1px solid #d8d8d8;
+      border-inline-end: 0;
+    }
+  }
+</style>

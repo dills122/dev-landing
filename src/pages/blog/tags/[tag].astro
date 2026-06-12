@@ -1,0 +1,66 @@
+---
+import { getCollection } from "astro:content";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((post) => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+---
+
+<BlogLayout
+  title={`Posts tagged ${tag} - Dylan Steele`}
+  description={`Blog posts tagged ${tag}.`}
+>
+  <section class="blog-index" aria-labelledby="tag-title">
+    <div class="blog-heading">
+      <a class="back-link" href={`${base}blog/`}>All writing</a>
+      <p class="section-kicker">Tag</p>
+      <h1 id="tag-title">{tag}</h1>
+    </div>
+
+    <div class="post-list">
+      {
+        posts.map((post) => (
+          <article class="post-card">
+            <div class="post-card-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate)}
+              </time>
+              <span>{post.data.type}</span>
+            </div>
+            <h2>
+              <a href={`${base}blog/${post.id}/`}>
+                {post.data.title}
+              </a>
+            </h2>
+            <p>{post.data.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BlogLayout>

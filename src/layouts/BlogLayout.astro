@@ -1,0 +1,70 @@
+---
+import { getCollection } from "astro:content";
+import SiteHeader from "../components/SiteHeader.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const recentPosts = posts.slice(0, 3);
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort(
+  (a, b) => a.localeCompare(b),
+);
+---
+
+<BaseLayout title={title} description={description}>
+  <SiteHeader />
+  <main id="content" class="blog-shell">
+    <slot />
+  </main>
+  <footer class="site-footer" aria-label="Blog footer">
+    <div class="footer-inner">
+      <section aria-labelledby="footer-writing">
+        <p class="section-kicker" id="footer-writing">Writing</p>
+        <ul class="footer-link-list">
+          {
+            recentPosts.map((post) => (
+              <li>
+                <a href={`${base}blog/${post.id}/`}>{post.data.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section aria-labelledby="footer-tags">
+        <p class="section-kicker" id="footer-tags">Tags</p>
+        <ul class="footer-tag-list">
+          {
+            tags.slice(0, 10).map((tag) => (
+              <li>
+                <a href={`${base}blog/tags/${tag}/`}>{tag}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section aria-labelledby="footer-elsewhere">
+        <p class="section-kicker" id="footer-elsewhere">Elsewhere</p>
+        <ul class="footer-link-list">
+          <li><a href="https://shwimp.studio/">Shwimp Studio</a></li>
+          <li><a href="https://github.com/dills122">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/dssteele122/">LinkedIn</a></li>
+        </ul>
+      </section>
+      <p class="footer-note">
+        © {new Date().getFullYear()} Dylan Steele. Built as a minimal Astro site;
+        related work and lore live at <a href="https://shwimp.studio/">shwimp.studio</a>.
+      </p>
+    </div>
+  </footer>
+</BaseLayout>
