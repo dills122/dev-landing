@@ -4,9 +4,9 @@ This site is a static Astro build deployed to GitHub Pages with GitHub Actions.
 
 ## Workflows
 
-Two workflows are configured, copied from the same pattern used in `corp-marketing`:
+Two workflows are configured:
 
-- `.github/workflows/ci.yml` builds the site on pull requests and manual runs.
+- `.github/workflows/ci.yml` runs linting, builds the site, audits the sitemap with Pa11y CI, and runs Lighthouse CI on representative pages.
 - `.github/workflows/deploy.yml` builds and deploys the site when `main` is pushed.
 
 The deploy workflow uses Astro's official GitHub Pages path:
@@ -34,29 +34,24 @@ the build artifact uploaded correctly, but GitHub Pages has not been enabled for
 
 ## Astro URL Settings
 
-This project is currently configured for a GitHub Pages project site:
+This project is configured for the custom domain root:
 
 ```js
-site: "https://dills122.github.io",
-base: "dev-landing",
+site: "https://dsteele.dev",
 ```
 
 That should publish at:
 
 ```text
-https://dills122.github.io/dev-landing/
+https://dsteele.dev/
 ```
 
-If the repository name changes, update `base` in `astro.config.mjs`.
+Do not set `base` while publishing to the domain root. A `base` value would prefix generated assets and links with a subdirectory, which breaks CSS and JavaScript requests on the custom domain.
 
-If you switch to a custom domain, update `astro.config.mjs` to use the full custom site URL and remove the `base` setting:
-
-```js
-site: "https://example.com",
-```
-
-Then add the custom domain to:
+The custom domain is checked into:
 
 ```text
 public/CNAME
 ```
+
+If this ever moves back to a GitHub Pages project URL, restore a matching `base` value in `astro.config.mjs` and update the audit URLs in `package.json` and `lighthouserc.cjs`.

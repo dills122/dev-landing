@@ -3,7 +3,7 @@ export const SITE = {
   email: "mailto:dylansteele57@gmail.com",
   jobTitle: "Senior Frontend Engineer",
   name: "Dylan Steele",
-  url: "https://dills122.github.io",
+  url: "https://dsteele.dev",
   description:
     "Senior frontend engineer building accessible web applications, design systems, content platforms, and financial product systems.",
   sameAs: [
