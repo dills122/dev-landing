@@ -53,7 +53,10 @@ const formatDate = (date: Date) =>
     {
       tocHeadings.length > 0 && (
         <details class="toc">
-          <summary>Contents</summary>
+          <summary>
+            <span class="toc-marker" aria-hidden="true"></span>
+            <span>Contents</span>
+          </summary>
           <ol>
             {tocHeadings.map((heading) => (
               <li class={`depth-${heading.depth}`}>
