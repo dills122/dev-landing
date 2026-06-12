@@ -32,9 +32,9 @@
     "lint": "npm run check && npm run format:check",
     "build": "npm run check && astro build",
     "preview": "astro preview --host 127.0.0.1",
-    "preview:ci": "astro preview --host 127.0.0.1 --port 4321",
-    "audit:a11y": "npm run build && start-server-and-test preview:ci http://127.0.0.1:4321/ audit:a11y:scan",
-    "audit:a11y:scan": "pa11y-ci --config .pa11yci.cjs --sitemap http://127.0.0.1:4321/sitemap.xml --sitemap-find https://dsteele.dev --sitemap-replace http://127.0.0.1:4321",
+    "preview:ci": "astro preview --host 127.0.0.1 --port 4322",
+    "audit:a11y": "npm run build && start-server-and-test preview:ci http://127.0.0.1:4322/ audit:a11y:scan",
+    "audit:a11y:scan": "pa11y-ci --config .pa11yci.cjs --sitemap http://127.0.0.1:4322/sitemap.xml --sitemap-find https://dsteele.dev --sitemap-replace http://127.0.0.1:4322",
     "audit:lighthouse": "npm run build && lhci autorun",
     "audit:site": "npm run audit:a11y && npm run audit:lighthouse"
   },
