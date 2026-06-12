@@ -45,8 +45,19 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Cache Puppeteer browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-puppeteer-
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install Chrome for audits
+        run: npx puppeteer browsers install chrome
 
       - name: Run Pa11y CI
         run: npm run audit:a11y
@@ -65,8 +76,19 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Cache Puppeteer browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-puppeteer-
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install Chrome for audits
+        run: npx puppeteer browsers install chrome
 
       - name: Run Lighthouse CI
         run: npm run audit:lighthouse
