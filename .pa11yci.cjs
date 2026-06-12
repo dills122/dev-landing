@@ -1,0 +1,10 @@
+module.exports = {
+  defaults: {
+    standard: "WCAG2AA",
+    timeout: 30000,
+    wait: 500,
+    chromeLaunchConfig: {
+      args: ["--no-sandbox"],
+    },
+  },
+};

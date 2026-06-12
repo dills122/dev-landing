@@ -1,13 +1,42 @@
 {
   "name": "dev-landing",
+  "description": "Personal landing page and technical writing site for Dylan Steele.",
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dsteele.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dills122/dev-landing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dills122/dev-landing/issues"
+  },
+  "license": "UNLICENSED",
+  "author": "Dylan Steele",
+  "keywords": [
+    "astro",
+    "portfolio",
+    "blog",
+    "frontend",
+    "accessibility"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "check": "astro check",
-    "build": "astro check && astro build",
-    "preview": "astro preview --host 127.0.0.1"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run check && npm run format:check",
+    "build": "npm run check && astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "preview:ci": "astro preview --host 127.0.0.1 --port 4321",
+    "audit:a11y": "npm run build && start-server-and-test preview:ci http://127.0.0.1:4321/ audit:a11y:scan",
+    "audit:a11y:scan": "pa11y-ci --config .pa11yci.cjs --sitemap http://127.0.0.1:4321/sitemap.xml --sitemap-find https://dsteele.dev --sitemap-replace http://127.0.0.1:4321",
+    "audit:lighthouse": "npm run build && lhci autorun",
+    "audit:site": "npm run audit:a11y && npm run audit:lighthouse"
   },
   "dependencies": {
     "astro": "6.4.6",
@@ -15,6 +44,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@lhci/cli": "^0.15.1",
+    "pa11y-ci": "^4.1.1",
+    "prettier": "^3.8.4",
+    "start-server-and-test": "^3.0.11",
     "typescript": "6.0.3"
   }
 }
