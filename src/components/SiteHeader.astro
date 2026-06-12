@@ -136,6 +136,39 @@ let menuLineIndex = 0;
     const fastReplayWindow = 8000;
     let lastClosedAt = 0;
 
+    const clearPrintState = () => {
+      menuPanel
+        .querySelectorAll("[data-priority-print], [data-print-complete]")
+        .forEach((item) => {
+          if (item instanceof HTMLElement) {
+            delete item.dataset.priorityPrint;
+            delete item.dataset.printComplete;
+          }
+        });
+    };
+
+    const prioritizePrint = (target: EventTarget | null) => {
+      if (!(target instanceof Element) || menuPanel.dataset.state !== "open") {
+        return;
+      }
+
+      const item = target.closest(".menu-item, .menu-child");
+
+      if (
+        item instanceof HTMLElement &&
+        menuPanel.contains(item) &&
+        !item.dataset.printComplete
+      ) {
+        item.dataset.priorityPrint = "";
+        window.setTimeout(() => {
+          if (item.dataset.priorityPrint === "") {
+            item.dataset.printComplete = "";
+            delete item.dataset.priorityPrint;
+          }
+        }, 160);
+      }
+    };
+
     const closeMenu = () => {
       menuButton.setAttribute("aria-expanded", "false");
       delete document.documentElement.dataset.menu;
@@ -146,6 +179,7 @@ let menuLineIndex = 0;
           menuPanel.hidden = true;
           delete menuPanel.dataset.state;
           delete menuPanel.dataset.replay;
+          clearPrintState();
         }
       }, 180);
     };
@@ -154,6 +188,7 @@ let menuLineIndex = 0;
       const shouldReplayFast =
         lastClosedAt > 0 && Date.now() - lastClosedAt < fastReplayWindow;
 
+      clearPrintState();
       menuPanel.hidden = false;
       menuPanel.dataset.replay = shouldReplayFast ? "fast" : "full";
       menuButton.setAttribute("aria-expanded", "true");
@@ -166,6 +201,34 @@ let menuLineIndex = 0;
     menuButton.addEventListener("click", () => {
       const isOpen = menuButton.getAttribute("aria-expanded") === "true";
       isOpen ? closeMenu() : openMenu();
+    });
+
+    menuPanel.addEventListener("pointerover", (event) => {
+      prioritizePrint(event.target);
+    });
+
+    menuPanel.addEventListener(
+      "focus",
+      (event) => {
+        prioritizePrint(event.target);
+      },
+      true,
+    );
+
+    menuPanel.addEventListener("animationend", (event) => {
+      if (
+        event.animationName !== "print-link" ||
+        !(event.target instanceof Element)
+      ) {
+        return;
+      }
+
+      const item = event.target.closest(".menu-item, .menu-child");
+
+      if (item instanceof HTMLElement) {
+        item.dataset.printComplete = "";
+        delete item.dataset.priorityPrint;
+      }
     });
 
     menuPanel.addEventListener("click", (event) => {

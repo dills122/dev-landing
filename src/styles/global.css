@@ -358,6 +358,7 @@ h1 {
   --menu-print-delay: 45ms;
   --menu-print-duration: 400ms;
   --menu-print-stagger: 95ms;
+  --menu-priority-print-duration: 140ms;
   --menu-replay-print-delay: 30ms;
   --menu-replay-print-duration: 240ms;
   --menu-replay-print-stagger: 55ms;
@@ -394,9 +395,15 @@ h1 {
   padding-inline-start: 1.1rem;
 }
 
+.menu-item,
+.menu-child {
+  inline-size: 100%;
+}
+
 .menu-panel a,
 .menu-label {
   display: inline-flex;
+  inline-size: 100%;
   min-block-size: 2.75rem;
   align-items: center;
   justify-content: flex-start;
@@ -460,6 +467,20 @@ h1 {
     var(--menu-replay-print-delay) +
       (var(--item-index) * var(--menu-replay-print-stagger))
   );
+}
+
+.menu-panel[data-state="open"] li[data-print-complete] > a span,
+.menu-panel[data-state="open"] li[data-print-complete] > .menu-label span {
+  inline-size: calc(var(--chars) * 1ch);
+  animation: none;
+}
+
+.menu-panel[data-state="open"] li[data-priority-print] > a span,
+.menu-panel[data-state="open"] li[data-priority-print] > .menu-label span {
+  inline-size: calc(var(--chars) * 1ch);
+  animation: none;
+  transition: inline-size var(--menu-priority-print-duration)
+    steps(var(--chars), end);
 }
 
 @keyframes print-link {
@@ -1084,7 +1105,7 @@ h1 {
 
 @media (min-width: 48rem) {
   .page-shell {
-    padding-block: 1.5rem 5rem;
+    padding-block: 1.5rem 4rem;
   }
 
   h1 {
