@@ -11,6 +11,9 @@ const profile = {
   availability: "Frontend-focused, full-stack experienced",
 };
 
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 const domains = ["Mortgages", "Lending", "Banking", "Payments", "Insurance"];
 const structuredData = {
   "@context": "https://schema.org",
@@ -45,8 +48,7 @@ const structuredData = {
     <section class="hero" aria-labelledby="intro-title">
       <div class="eyebrow" aria-label="Current status">
         <span>{profile.location}</span>
-        <span class="desktop-status">{profile.availability}</span>
-        <span class="mobile-status">Frontend-focused</span>
+        <span>{profile.availability}</span>
       </div>
 
       <h1 id="intro-title">
@@ -71,6 +73,9 @@ const structuredData = {
       <div class="actions" aria-label="Primary actions">
         <a class="button" href="mailto:dylansteele57@gmail.com"
           >Start a conversation</a
+        >
+        <a class="button button-secondary" href={`${base}blog/`}
+          >Read my ramblings</a
         >
       </div>
     </section>
