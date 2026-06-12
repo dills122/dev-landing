@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Dylan Steele developer landing page</title>
+  <desc id="desc">A minimal dark developer landing page with a compact typographic mark.</desc>
+  <rect width="1200" height="630" fill="#0b0d0e"/>
+  <path d="M0 0h1200v630H0z" fill="#0b0d0e"/>
+  <g opacity=".18" stroke="#f2f0e9">
+    <path d="M0 120h1200M0 240h1200M0 360h1200M0 480h1200"/>
+    <path d="M160 0v630M320 0v630M480 0v630M640 0v630M800 0v630M960 0v630"/>
+  </g>
+  <circle cx="270" cy="208" r="92" fill="#b8ff6a" opacity=".12"/>
+  <text x="120" y="290" fill="#f2f0e9" font-family="Inter, system-ui, sans-serif" font-size="92" font-weight="750">Dylan Steele</text>
+  <text x="124" y="366" fill="#b8b2a7" font-family="Inter, system-ui, sans-serif" font-size="34">Senior Frontend Engineer</text>
+  <path d="M124 430h228" stroke="#b8ff6a" stroke-width="10" stroke-linecap="round"/>
+</svg>

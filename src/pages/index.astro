@@ -1,0 +1,234 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const profile = {
+  name: "Dylan Steele",
+  role: "Senior Frontend Engineer",
+  summary: "Building the systems behind modern financial products.",
+  location: "Central, PA",
+  availability: "Frontend-focused, full-stack experienced",
+};
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const menuItems = [
+  { href: "mailto:dylansteele57@gmail.com", label: "Email" },
+  { href: "https://github.com/dills122", label: "GitHub" },
+  {
+    label: "Professional",
+    children: [
+      { href: "https://www.linkedin.com/in/dssteele122/", label: "LinkedIn" },
+      { href: `${base}resume.pdf`, label: "Resume" },
+    ],
+  },
+  {
+    label: "Work",
+    children: [
+      { href: "#content", label: "Now" },
+      { href: "https://github.com/dills122", label: "Projects" },
+    ],
+  },
+  {
+    label: "Writing",
+    children: [
+      { href: "#content", label: "Notes" },
+      { href: "#content", label: "Archive" },
+    ],
+  },
+];
+
+let menuLineIndex = 0;
+
+const domains = ["Mortgages", "Lending", "Banking", "Payments", "Insurance"];
+---
+
+<BaseLayout
+  title={`${profile.name} - ${profile.role}`}
+  description={profile.summary}
+>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href={base} aria-label={`${profile.name} home`}>
+        <span>{profile.name}</span>
+      </a>
+      <div class="menu-root">
+        <button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-menu"
+          data-menu-button
+        >
+          <span class="menu-button-text">Menu</span>
+          <span class="menu-icon" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+        <nav
+          id="site-menu"
+          class="menu-panel"
+          aria-label="Contact links"
+          data-menu-panel
+          hidden
+        >
+          <ul>
+            {
+              menuItems.map((item) => {
+                const lineIndex = menuLineIndex++;
+
+                return (
+                  <li
+                    class:list={[
+                      "menu-item",
+                      { "has-children": item.children },
+                    ]}
+                    style={`--item-index: ${lineIndex}; --chars: ${item.label.length}`}
+                  >
+                    {item.href ? (
+                      <a href={item.href}>
+                        <span>{item.label}</span>
+                      </a>
+                    ) : (
+                      <p class="menu-label">
+                        <span>{item.label}</span>
+                      </p>
+                    )}
+                    {item.children && (
+                      <ul>
+                        {item.children.map((child) => {
+                          const childLineIndex = menuLineIndex++;
+
+                          return (
+                            <li
+                              class="menu-child"
+                              style={`--item-index: ${childLineIndex}; --chars: ${child.label.length}`}
+                            >
+                              <a href={child.href}>
+                                <span>{child.label}</span>
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </nav>
+      </div>
+    </nav>
+  </header>
+
+  <main id="content" class="page-shell">
+    <section class="hero" aria-labelledby="intro-title">
+      <div class="eyebrow" aria-label="Current status">
+        <span>{profile.location}</span>
+        <span class="desktop-status">{profile.availability}</span>
+        <span class="mobile-status">Frontend-focused</span>
+      </div>
+
+      <h1 id="intro-title">
+        Building the systems behind modern financial products.
+      </h1>
+
+      <div class="intro-copy">
+        <p class="lede">
+          I've spent the last several years building web applications across
+          banking, lending, insurance, and payments. While my background spans
+          both full-stack and frontend development, recent work has focused on
+          frontend architecture, accessibility, design systems, content
+          platforms, and the engineering practices that help teams build
+          software more effectively.
+        </p>
+      </div>
+
+      <ul class="domain-list" aria-label="Financial product experience">
+        {domains.map((domain) => <li>{domain}</li>)}
+      </ul>
+
+      <div class="actions" aria-label="Primary actions">
+        <a class="button" href="mailto:dylansteele57@gmail.com"
+          >Start a conversation</a
+        >
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const menuButton = document.querySelector("[data-menu-button]");
+    const menuPanel = document.querySelector("[data-menu-panel]");
+
+    if (
+      menuButton instanceof HTMLButtonElement &&
+      menuPanel instanceof HTMLElement
+    ) {
+      const fastReplayWindow = 8000;
+      let lastClosedAt = 0;
+
+      const closeMenu = () => {
+        menuButton.setAttribute("aria-expanded", "false");
+        delete document.documentElement.dataset.menu;
+        lastClosedAt = Date.now();
+        menuPanel.dataset.state = "closing";
+        window.setTimeout(() => {
+          if (menuPanel.dataset.state === "closing") {
+            menuPanel.hidden = true;
+            delete menuPanel.dataset.state;
+            delete menuPanel.dataset.replay;
+          }
+        }, 180);
+      };
+
+      const openMenu = () => {
+        const shouldReplayFast =
+          lastClosedAt > 0 && Date.now() - lastClosedAt < fastReplayWindow;
+
+        menuPanel.hidden = false;
+        menuPanel.dataset.replay = shouldReplayFast ? "fast" : "full";
+        menuButton.setAttribute("aria-expanded", "true");
+        document.documentElement.dataset.menu = "open";
+        window.requestAnimationFrame(() => {
+          menuPanel.dataset.state = "open";
+        });
+      };
+
+      menuButton.addEventListener("click", () => {
+        const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+        isOpen ? closeMenu() : openMenu();
+      });
+
+      menuPanel.addEventListener("click", (event) => {
+        if (event.target instanceof Element && event.target.closest("a")) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Escape" &&
+          menuButton.getAttribute("aria-expanded") === "true"
+        ) {
+          closeMenu();
+          menuButton.focus();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        if (
+          menuButton.getAttribute("aria-expanded") === "true" &&
+          event.target instanceof Node &&
+          !menuPanel.contains(event.target) &&
+          !menuButton.contains(event.target)
+        ) {
+          closeMenu();
+        }
+      });
+    }
+  </script>
+</BaseLayout>
