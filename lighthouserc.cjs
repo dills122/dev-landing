@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const chromePath = process.env.CHROME_PATH;
 
 module.exports = {
   ci: {
@@ -6,7 +6,7 @@ module.exports = {
       startServerCommand: "npm run preview:ci",
       startServerReadyPattern: "Local",
       startServerReadyTimeout: 30000,
-      chromePath: process.env.CHROME_PATH || puppeteer.executablePath(),
+      ...(chromePath ? { chromePath } : {}),
       url: [
         "http://127.0.0.1:4321/",
         "http://127.0.0.1:4321/blog/",

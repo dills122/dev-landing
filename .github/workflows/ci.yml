@@ -45,21 +45,18 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Cache Puppeteer browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/puppeteer
-          key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-puppeteer-
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Chrome for audits
+      - name: Locate Chrome
         run: |
-          rm -rf ~/.cache/puppeteer/chrome
-          npx puppeteer install chrome
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_path" ]; then
+            echo "Chrome was not found on PATH."
+            exit 1
+          fi
+          echo "CHROME_PATH=$chrome_path" >> "$GITHUB_ENV"
+          "$chrome_path" --version
 
       - name: Run Pa11y CI
         run: npm run audit:a11y
@@ -78,21 +75,18 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Cache Puppeteer browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/puppeteer
-          key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-puppeteer-
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Chrome for audits
+      - name: Locate Chrome
         run: |
-          rm -rf ~/.cache/puppeteer/chrome
-          npx puppeteer install chrome
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_path" ]; then
+            echo "Chrome was not found on PATH."
+            exit 1
+          fi
+          echo "CHROME_PATH=$chrome_path" >> "$GITHUB_ENV"
+          "$chrome_path" --version
 
       - name: Run Lighthouse CI
         run: npm run audit:lighthouse
