@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BlogLayout from "../../layouts/BlogLayout.astro";
+import { absoluteUrl } from "../../lib/seo";
 
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -17,11 +18,41 @@ const formatDate = (date: Date) =>
     timeZone: "UTC",
     year: "numeric",
   }).format(date);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": `${absoluteUrl("blog/")}#blog`,
+  name: "Dylan Steele writing",
+  description:
+    "Technical reviews, overviews, tutorials, notes, and ramblings from Dylan Steele.",
+  url: absoluteUrl("blog/"),
+  inLanguage: "en-US",
+  author: {
+    "@id": `${absoluteUrl()}#person`,
+  },
+  blogPost: posts.slice(0, 10).map((post) => ({
+    "@type": "BlogPosting",
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.pubDate.toISOString(),
+    dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+    url: absoluteUrl(`blog/${post.id}/`),
+  })),
+};
 ---
 
 <BlogLayout
   title="Blog - Dylan Steele"
   description="Technical reviews, overviews, tutorials, notes, and ramblings from Dylan Steele."
+  keywords={[
+    "Dylan Steele blog",
+    "frontend engineering blog",
+    "Astro blog",
+    "AngularJS migration",
+    "technical writing",
+  ]}
+  structuredData={structuredData}
 >
   <section class="blog-index" aria-labelledby="blog-title">
     <div class="blog-heading">

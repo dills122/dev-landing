@@ -109,7 +109,7 @@ const hashingCode = `static string Hash(string input, string salt)
 
         <article id="aspnet" class="legacy-panel">
           <div>
-            <p class="archive-kicker">ASP.NET</p>
+            <p class="archive-kicker legacy-panel-kicker">ASP.NET</p>
             <h3>COPOS report tooling</h3>
             <p>
               The original project pages described generated report tables,
@@ -133,7 +133,7 @@ const hashingCode = `static string Hash(string input, string salt)
 
         <article id="calculator" class="legacy-panel">
           <div>
-            <p class="archive-kicker">Desktop project</p>
+            <p class="archive-kicker legacy-panel-kicker">Desktop project</p>
             <h3>Calculator</h3>
             <p>
               A college calculator application using mXparser for arithmetic
@@ -148,7 +148,7 @@ const hashingCode = `static string Hash(string input, string salt)
         </article>
 
         <article id="mortgage" class="legacy-panel">
-          <p class="archive-kicker">Mortgage amortization</p>
+          <p class="archive-kicker legacy-panel-kicker">Mortgage amortization</p>
           <h3>Stubbed form recreation</h3>
           <form class="mortgage-form" aria-label="Archived mortgage calculator form">
             <label>
@@ -167,12 +167,17 @@ const hashingCode = `static string Hash(string input, string salt)
               <span>Annual Interest Rate</span>
               <input type="text" placeholder="6.75%" />
             </label>
-            <button type="button">Submit</button>
+            <p id="mortgage-note" class="archive-note">
+              This archived form is a visual recreation only.
+            </p>
+            <button type="button" disabled aria-describedby="mortgage-note">
+              Submit
+            </button>
           </form>
         </article>
 
         <article id="scheduler" class="legacy-panel">
-          <p class="archive-kicker">Task Scheduler System</p>
+          <p class="archive-kicker legacy-panel-kicker">Task Scheduler System</p>
           <h3>Quartz.NET scheduling example</h3>
           <p>
             The old page described a WebForms replacement for Windows Task
@@ -182,7 +187,7 @@ const hashingCode = `static string Hash(string input, string salt)
         </article>
 
         <article id="hashing" class="legacy-panel">
-          <p class="archive-kicker">Hashing and salting</p>
+          <p class="archive-kicker legacy-panel-kicker">Hashing and salting</p>
           <h3>Windows Forms password utility</h3>
           <p>
             The archived code example hashed a password plus random salt using
@@ -198,7 +203,7 @@ const hashingCode = `static string Hash(string input, string salt)
 <style>
   .archive-site {
     --legacy-cyan: #caebf2;
-    --legacy-gray: #a9a9a9;
+    --legacy-gray: #51595c;
     --legacy-panel: #efefef;
     --legacy-dark: #333333;
 
@@ -336,7 +341,7 @@ const hashingCode = `static string Hash(string input, string salt)
 
   .legacy-sidebar a {
     border-radius: 4px;
-    background: #337ab7;
+    background: #23639a;
     color: #fff;
     padding: 0.42rem 0.65rem;
     text-decoration: none;
@@ -375,6 +380,10 @@ const hashingCode = `static string Hash(string input, string salt)
   .legacy-panel p:not(.archive-kicker),
   .legacy-panel li {
     color: #222;
+  }
+
+  .legacy-panel-kicker {
+    color: #674f00;
   }
 
   .legacy-image-grid {
@@ -416,6 +425,10 @@ const hashingCode = `static string Hash(string input, string salt)
     color: #fff;
     cursor: not-allowed;
     padding: 0.65rem 0.75rem;
+  }
+
+  .archive-note {
+    font-size: 0.92rem;
   }
 
   .legacy-panel pre {

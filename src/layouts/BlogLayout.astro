@@ -6,9 +6,22 @@ import BaseLayout from "./BaseLayout.astro";
 interface Props {
   title: string;
   description: string;
+  keywords?: string[];
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  type?: "article" | "profile" | "website";
 }
 
-const { title, description } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  modifiedTime,
+  publishedTime,
+  structuredData,
+  type,
+} = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -22,7 +35,15 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort(
 );
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  modifiedTime={modifiedTime}
+  publishedTime={publishedTime}
+  structuredData={structuredData}
+  type={type}
+>
   <SiteHeader />
   <main id="content" class="blog-shell">
     <slot />

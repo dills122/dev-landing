@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import BlogLayout from "../../layouts/BlogLayout.astro";
+import { absoluteUrl } from "../../lib/seo";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
@@ -25,9 +26,47 @@ const formatDate = (date: Date) =>
     timeZone: "UTC",
     year: "numeric",
   }).format(date);
+
+const postUrl = absoluteUrl(`blog/${post.id}/`);
+const postKeywords = [
+  post.data.title,
+  post.data.type,
+  ...post.data.tags,
+  "Dylan Steele",
+  "frontend engineering",
+  "technical writing",
+];
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": `${postUrl}#article`,
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  mainEntityOfPage: postUrl,
+  url: postUrl,
+  inLanguage: "en-US",
+  articleSection: post.data.type,
+  keywords: postKeywords,
+  author: {
+    "@id": `${absoluteUrl()}#person`,
+  },
+  publisher: {
+    "@id": `${absoluteUrl()}#person`,
+  },
+};
 ---
 
-<BlogLayout title={`${post.data.title} - Dylan Steele`} description={post.data.description}>
+<BlogLayout
+  title={`${post.data.title} - Dylan Steele`}
+  description={post.data.description}
+  keywords={postKeywords}
+  modifiedTime={post.data.updatedDate ?? post.data.pubDate}
+  publishedTime={post.data.pubDate}
+  structuredData={structuredData}
+  type="article"
+>
   <article class="post-layout">
     <header class="post-header">
       <a class="back-link" href={`${base}blog/`}>All writing</a>

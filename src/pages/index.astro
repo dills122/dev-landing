@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import { absoluteUrl, SITE } from "../lib/seo";
 
 const profile = {
   name: "Dylan Steele",
@@ -11,11 +12,32 @@ const profile = {
 };
 
 const domains = ["Mortgages", "Lending", "Banking", "Payments", "Insurance"];
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "@id": `${absoluteUrl()}#profile`,
+  url: absoluteUrl(),
+  name: `${profile.name} - ${profile.role}`,
+  description: SITE.description,
+  inLanguage: "en-US",
+  mainEntity: {
+    "@id": `${absoluteUrl()}#person`,
+  },
+};
 ---
 
 <BaseLayout
   title={`${profile.name} - ${profile.role}`}
-  description={profile.summary}
+  description="Dylan Steele is a senior frontend engineer building accessible web applications, design systems, content platforms, and financial product systems across banking, lending, payments, and insurance."
+  keywords={[
+    "Dylan Steele",
+    "Dylan Steele senior frontend engineer",
+    "Dylan Steele fintech engineer",
+    "financial product systems",
+    "Central Pennsylvania frontend engineer",
+  ]}
+  structuredData={structuredData}
+  type="profile"
 >
   <SiteHeader label={profile.name} />
 

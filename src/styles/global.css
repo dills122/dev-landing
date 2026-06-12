@@ -521,6 +521,8 @@ h1 {
 }
 
 .post-card h2 a {
+  display: inline-block;
+  padding-block: 0.12rem;
   text-decoration: none;
 }
 
@@ -684,6 +686,9 @@ h1 {
 }
 
 .toc a {
+  display: inline-flex;
+  min-block-size: 1.5rem;
+  align-items: center;
   color: var(--text-muted);
   text-decoration: none;
 }
@@ -791,6 +796,10 @@ h1 {
   line-height: 1.65;
 }
 
+.post-body pre code span[style*="6A737D" i] {
+  color: #9ba3ad !important;
+}
+
 .copy-code-button {
   position: absolute;
   inset-block-start: 0.55rem;
@@ -858,6 +867,9 @@ h1 {
 
 .footer-link-list a,
 .footer-tag-list a {
+  display: inline-flex;
+  min-block-size: 1.5rem;
+  align-items: center;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -894,6 +906,12 @@ h1 {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   padding-top: 1rem;
+}
+
+.footer-note a {
+  display: inline-flex;
+  min-block-size: 1.5rem;
+  align-items: center;
 }
 
 @media (max-width: 39.98rem) {

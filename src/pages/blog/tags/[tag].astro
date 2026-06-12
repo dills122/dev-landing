@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BlogLayout from "../../../layouts/BlogLayout.astro";
+import { absoluteUrl } from "../../../lib/seo";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
@@ -29,11 +30,35 @@ const formatDate = (date: Date) =>
     timeZone: "UTC",
     year: "numeric",
   }).format(date);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": `${absoluteUrl(`blog/tags/${tag}/`)}#collection`,
+  name: `Posts tagged ${tag}`,
+  description: `Blog posts tagged ${tag} by Dylan Steele.`,
+  url: absoluteUrl(`blog/tags/${tag}/`),
+  inLanguage: "en-US",
+  isPartOf: {
+    "@id": `${absoluteUrl("blog/")}#blog`,
+  },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: posts.map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`blog/${post.id}/`),
+      name: post.data.title,
+    })),
+  },
+};
 ---
 
 <BlogLayout
   title={`Posts tagged ${tag} - Dylan Steele`}
   description={`Blog posts tagged ${tag}.`}
+  keywords={[tag, `Dylan Steele ${tag}`, `${tag} blog posts`]}
+  structuredData={structuredData}
 >
   <section class="blog-index" aria-labelledby="tag-title">
     <div class="blog-heading">
