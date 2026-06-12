@@ -22,7 +22,7 @@
   --warm: #e2bd72;
   --danger: #ef7d7d;
   --max-width: 96rem;
-  --space-page: 1rem;
+  --space-page: clamp(1rem, 0.5rem + 2.5vw, 1.5rem);
   --radius: 8px;
 }
 
@@ -198,10 +198,6 @@ ul {
   gap: 0.55rem;
 }
 
-.mobile-status {
-  display: none;
-}
-
 .eyebrow span + span::before {
   inline-size: 0.35rem;
   block-size: 0.35rem;
@@ -293,6 +289,18 @@ h1 {
   filter: brightness(0.94);
 }
 
+.button-secondary {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.button-secondary:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+  filter: none;
+}
+
 .menu-root {
   position: relative;
 }
@@ -347,6 +355,14 @@ h1 {
 }
 
 .menu-panel {
+  --menu-print-delay: 45ms;
+  --menu-print-duration: 400ms;
+  --menu-print-stagger: 95ms;
+  --menu-priority-print-duration: 140ms;
+  --menu-replay-print-delay: 30ms;
+  --menu-replay-print-duration: 240ms;
+  --menu-replay-print-stagger: 55ms;
+
   position: absolute;
   inset-block-start: calc(100% + 2rem);
   inset-inline-end: -0.75rem;
@@ -379,9 +395,15 @@ h1 {
   padding-inline-start: 1.1rem;
 }
 
+.menu-item,
+.menu-child {
+  inline-size: 100%;
+}
+
 .menu-panel a,
 .menu-label {
   display: inline-flex;
+  inline-size: 100%;
   min-block-size: 2.75rem;
   align-items: center;
   justify-content: flex-start;
@@ -431,15 +453,34 @@ h1 {
 
 .menu-panel[data-state="open"] a span,
 .menu-panel[data-state="open"] .menu-label span {
-  animation: print-link 560ms steps(var(--chars)) forwards;
-  animation-delay: calc(80ms + (var(--item-index) * 170ms));
+  animation: print-link var(--menu-print-duration) steps(var(--chars)) forwards;
+  animation-delay: calc(
+    var(--menu-print-delay) + (var(--item-index) * var(--menu-print-stagger))
+  );
   border-inline-end: 1px solid var(--accent);
 }
 
 .menu-panel[data-state="open"][data-replay="fast"] a span,
 .menu-panel[data-state="open"][data-replay="fast"] .menu-label span {
-  animation-duration: 240ms;
-  animation-delay: calc(30ms + (var(--item-index) * 55ms));
+  animation-duration: var(--menu-replay-print-duration);
+  animation-delay: calc(
+    var(--menu-replay-print-delay) +
+      (var(--item-index) * var(--menu-replay-print-stagger))
+  );
+}
+
+.menu-panel[data-state="open"] li[data-print-complete] > a span,
+.menu-panel[data-state="open"] li[data-print-complete] > .menu-label span {
+  inline-size: calc(var(--chars) * 1ch);
+  animation: none;
+}
+
+.menu-panel[data-state="open"] li[data-priority-print] > a span,
+.menu-panel[data-state="open"] li[data-priority-print] > .menu-label span {
+  inline-size: calc(var(--chars) * 1ch);
+  animation: none;
+  transition: inline-size var(--menu-priority-print-duration)
+    steps(var(--chars), end);
 }
 
 @keyframes print-link {
@@ -450,6 +491,7 @@ h1 {
 
 .blog-shell {
   width: min(100%, var(--max-width));
+  min-block-size: min(42rem, calc(100vh - 8rem));
   margin-inline: auto;
   padding: 2.75rem var(--space-page) 5rem;
 }
@@ -914,28 +956,63 @@ h1 {
   align-items: center;
 }
 
+@media (min-width: 80rem) {
+  .menu-panel {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .blog-shell,
+  .footer-inner {
+    --menu-rail: 15rem;
+
+    width: min(
+      calc(100% - var(--menu-rail)),
+      calc(var(--max-width) - var(--menu-rail))
+    );
+    margin-inline-start: max(0px, calc((100% - var(--max-width)) / 2));
+    margin-inline-end: auto;
+  }
+}
+
+@media (max-width: 79.98rem) {
+  .menu-panel {
+    inset-block-start: calc(100% + 2rem);
+    inset-inline-end: 0;
+    inline-size: min(22rem, calc(100vw - (var(--space-page) * 2)));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--bg-raised) 96%, black);
+    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.42);
+    padding: 0.85rem;
+  }
+}
+
 @media (max-width: 39.98rem) {
+  .nav {
+    flex-wrap: wrap;
+  }
+
   .menu-root {
-    position: static;
+    display: contents;
   }
 
   .menu-panel {
-    inline-size: min(100%, 20rem);
-    inset-inline-start: 0;
-    inset-inline-end: auto;
+    position: static;
+    flex-basis: 100%;
+    inline-size: 100%;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    margin-block-start: 0.75rem;
+    padding: 0;
   }
 
   .page-shell {
     min-block-size: auto;
     padding-block: 2.4rem 2.5rem;
-  }
-
-  html[data-menu="open"] .page-shell {
-    padding-block-start: 24.5rem;
-  }
-
-  html[data-menu="open"] .blog-shell {
-    padding-block-start: 24.5rem;
   }
 
   .hero {
@@ -949,14 +1026,6 @@ h1 {
   }
 
   .eyebrow span {
-    display: block;
-  }
-
-  .eyebrow .desktop-status {
-    display: none;
-  }
-
-  .eyebrow .mobile-status {
     display: block;
   }
 
@@ -1035,12 +1104,8 @@ h1 {
 }
 
 @media (min-width: 48rem) {
-  :root {
-    --space-page: 1.5rem;
-  }
-
   .page-shell {
-    padding-block: 1.5rem 5rem;
+    padding-block: 1.5rem 4rem;
   }
 
   h1 {
