@@ -1,19 +1,35 @@
 ---
 import { getCollection } from "astro:content";
 import BlogLayout from "../../../layouts/BlogLayout.astro";
+import { slugifyTag } from "../../../lib/blog";
 import { absoluteUrl } from "../../../lib/seo";
 
 export async function getStaticPaths() {
-  const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+  const posts = (await getCollection("blog")).filter(
+    (post) => !post.data.draft,
+  );
+  const tagEntries = new Map<string, { tag: string; posts: typeof posts }>();
 
-  return tags.map((tag) => ({
-    params: { tag },
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      const slug = slugifyTag(tag);
+      const entry = tagEntries.get(slug) ?? { tag, posts: [] };
+
+      if (!entry.posts.some((entryPost) => entryPost.id === post.id)) {
+        entry.posts.push(post);
+      }
+
+      tagEntries.set(slug, entry);
+    }
+  }
+
+  return [...tagEntries.entries()].map(([tagSlug, entry]) => ({
+    params: { tag: tagSlug },
     props: {
-      tag,
-      posts: posts
-        .filter((post) => post.data.tags.includes(tag))
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+      tag: entry.tag,
+      posts: entry.posts.sort(
+        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+      ),
     },
   }));
 }
@@ -34,10 +50,10 @@ const formatDate = (date: Date) =>
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "@id": `${absoluteUrl(`blog/tags/${tag}/`)}#collection`,
+  "@id": `${absoluteUrl(`blog/tags/${slugifyTag(tag)}/`)}#collection`,
   name: `Posts tagged ${tag}`,
   description: `Blog posts tagged ${tag} by Dylan Steele.`,
-  url: absoluteUrl(`blog/tags/${tag}/`),
+  url: absoluteUrl(`blog/tags/${slugifyTag(tag)}/`),
   inLanguage: "en-US",
   isPartOf: {
     "@id": `${absoluteUrl("blog/")}#blog`,
@@ -78,9 +94,7 @@ const structuredData = {
               <span>{post.data.type}</span>
             </div>
             <h2>
-              <a href={`${base}blog/${post.id}/`}>
-                {post.data.title}
-              </a>
+              <a href={`${base}blog/${post.id}/`}>{post.data.title}</a>
             </h2>
             <p>{post.data.description}</p>
           </article>

@@ -82,10 +82,7 @@ let menuLineIndex = 0;
 
               return (
                 <li
-                  class:list={[
-                    "menu-item",
-                    { "has-children": item.children },
-                  ]}
+                  class:list={["menu-item", { "has-children": item.children }]}
                   style={`--item-index: ${lineIndex}; --chars: ${item.label.length}`}
                 >
                   {item.href ? (

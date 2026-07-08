@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import { getLatestPostDate, slugifyTag } from "../lib/blog";
 import { absoluteUrl } from "../lib/seo";
 
 const escapeXml = (value: string) =>
@@ -16,8 +17,10 @@ export const GET: APIRoute = async () => {
   const posts = (await getCollection("blog"))
     .filter((post) => !post.data.draft)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
-  const latestPostDate = posts[0]?.data.updatedDate ?? posts[0]?.data.pubDate;
+  const tagSlugs = [
+    ...new Set(posts.flatMap((post) => post.data.tags.map(slugifyTag))),
+  ].sort();
+  const latestPostDate = getLatestPostDate(posts);
 
   const urls = [
     {
@@ -44,8 +47,8 @@ export const GET: APIRoute = async () => {
       changefreq: "monthly",
       priority: "0.7",
     })),
-    ...tags.map((tag) => ({
-      path: `blog/tags/${tag}/`,
+    ...tagSlugs.map((tagSlug) => ({
+      path: `blog/tags/${tagSlug}/`,
       lastmod: latestPostDate,
       changefreq: "weekly",
       priority: "0.5",
