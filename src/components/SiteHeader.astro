@@ -82,10 +82,7 @@ let menuLineIndex = 0;
 
               return (
                 <li
-                  class:list={[
-                    "menu-item",
-                    { "has-children": item.children },
-                  ]}
+                  class:list={["menu-item", { "has-children": item.children }]}
                   style={`--item-index: ${lineIndex}; --chars: ${item.label.length}`}
                 >
                   {item.href ? (
@@ -135,6 +132,7 @@ let menuLineIndex = 0;
   ) {
     const fastReplayWindow = 8000;
     let lastClosedAt = 0;
+    let closeTimer = 0;
 
     const clearPrintState = () => {
       menuPanel
@@ -145,6 +143,15 @@ let menuLineIndex = 0;
             delete item.dataset.printComplete;
           }
         });
+    };
+
+    const resetMenuState = () => {
+      menuPanel.hidden = true;
+      menuButton.setAttribute("aria-expanded", "false");
+      delete document.documentElement.dataset.menu;
+      delete menuPanel.dataset.state;
+      delete menuPanel.dataset.replay;
+      clearPrintState();
     };
 
     const prioritizePrint = (target: EventTarget | null) => {
@@ -169,17 +176,21 @@ let menuLineIndex = 0;
       }
     };
 
-    const closeMenu = () => {
+    const closeMenu = ({ immediate = false } = {}) => {
+      window.clearTimeout(closeTimer);
       menuButton.setAttribute("aria-expanded", "false");
       delete document.documentElement.dataset.menu;
       lastClosedAt = Date.now();
+
+      if (immediate) {
+        resetMenuState();
+        return;
+      }
+
       menuPanel.dataset.state = "closing";
-      window.setTimeout(() => {
+      closeTimer = window.setTimeout(() => {
         if (menuPanel.dataset.state === "closing") {
-          menuPanel.hidden = true;
-          delete menuPanel.dataset.state;
-          delete menuPanel.dataset.replay;
-          clearPrintState();
+          resetMenuState();
         }
       }, 180);
     };
@@ -188,6 +199,7 @@ let menuLineIndex = 0;
       const shouldReplayFast =
         lastClosedAt > 0 && Date.now() - lastClosedAt < fastReplayWindow;
 
+      window.clearTimeout(closeTimer);
       clearPrintState();
       menuPanel.hidden = false;
       menuPanel.dataset.replay = shouldReplayFast ? "fast" : "full";
@@ -233,8 +245,16 @@ let menuLineIndex = 0;
 
     menuPanel.addEventListener("click", (event) => {
       if (event.target instanceof Element && event.target.closest("a")) {
-        closeMenu();
+        closeMenu({ immediate: true });
       }
+    });
+
+    window.addEventListener("pagehide", () => {
+      resetMenuState();
+    });
+
+    window.addEventListener("pageshow", () => {
+      resetMenuState();
     });
 
     document.addEventListener("keydown", (event) => {

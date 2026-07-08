@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import SiteHeader from "../components/SiteHeader.astro";
+import { slugifyTag } from "../lib/blog";
 import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
@@ -68,7 +69,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort(
           {
             tags.slice(0, 10).map((tag) => (
               <li>
-                <a href={`${base}blog/tags/${tag}/`}>{tag}</a>
+                <a href={`${base}blog/tags/${slugifyTag(tag)}/`}>{tag}</a>
               </li>
             ))
           }
@@ -79,12 +80,16 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort(
         <ul class="footer-link-list">
           <li><a href="https://shwimp.studio/">Shwimp Studio</a></li>
           <li><a href="https://github.com/dills122">GitHub</a></li>
-          <li><a href="https://www.linkedin.com/in/dssteele122/">LinkedIn</a></li>
+          <li>
+            <a href="https://www.linkedin.com/in/dssteele122/">LinkedIn</a>
+          </li>
         </ul>
       </section>
       <p class="footer-note">
         © {new Date().getFullYear()} Dylan Steele. Built as a minimal Astro site;
-        related work and lore live at <a href="https://shwimp.studio/">shwimp.studio</a>.
+        related work and lore live at <a href="https://shwimp.studio/"
+          >shwimp.studio</a
+        >.
       </p>
     </div>
   </footer>

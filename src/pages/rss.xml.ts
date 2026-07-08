@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import { getLatestPostDate } from "../lib/blog";
 import { absoluteUrl, SITE } from "../lib/seo";
 
 const escapeXml = (value: string) =>
@@ -14,6 +15,7 @@ export const GET: APIRoute = async () => {
   const posts = (await getCollection("blog"))
     .filter((post) => !post.data.draft)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const lastBuildDate = getLatestPostDate(posts);
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -23,7 +25,7 @@ export const GET: APIRoute = async () => {
     <link>${escapeXml(absoluteUrl("blog/"))}</link>
     <atom:link href="${escapeXml(absoluteUrl("rss.xml"))}" rel="self" type="application/rss+xml" />
     <language>en-us</language>
-    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    ${lastBuildDate ? `<lastBuildDate>${lastBuildDate.toUTCString()}</lastBuildDate>` : ""}
 ${posts
   .map(
     (post) => `    <item>
